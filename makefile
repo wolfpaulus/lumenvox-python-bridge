@@ -1,13 +1,13 @@
 CFLAGS += -std=c99
 CFLAGS += -std=gnu99 
-CFLAGS += -I/usr/include/python2.6
+CFLAGS += -I/usr/include/python2.7 -I/usr/local/include/python2.7
 CPPFLAGS += -g
 
 PROCESSOR=$(shell uname -p)
 ifeq  ("$(PROCESSOR)", "x86_64")
-RPATHDIR=/usr/lib64
+RPATHDIR=/usr/lib64:/usr/local/lib64
 else
-RPATHDIR=/usr/lib
+RPATHDIR=/usr/lib:/usr/local/lib
 endif
 
 LDFLAGS += -s -Wl,-rpath=$(RPATHDIR),-Bsymbolic 
@@ -21,13 +21,14 @@ CSOURCES = \
 	lvmodule.c
 
 DEP_LIBS = \
-	-llv_lvspeechport -lmp3lame -lpython2.6
+	-llv_lvspeechport -lmp3lame -lpython2.7 -lutil
 
 
 COMPILE_C = gcc
 COMPILE_CPP = g++
 
-INC_DIR += -I/usr/include 
+
+INC_DIR += -I/usr/include -I/usr/local/include 
 LIB_DIR += -L$(RPATHDIR)
 
 CPPOBJECTS = $(CPPSOURCES:.cpp=.o)
