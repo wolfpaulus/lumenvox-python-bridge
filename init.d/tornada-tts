@@ -1,0 +1,21 @@
+#!/bin/sh
+# chkconfig: 123456 11 12
+# TornadoTTS
+# WebService turns text into mp3 voice audio
+case "$1" in
+  start)
+    echo "Starting Tornado TTS Server on Port 8000"
+    cd /usr/share/pytts
+    python /usr/share/pytts/TTSServer.py &
+    ;;
+  stop)
+    echo "Stopping Tornado TTS Server"
+    killall python
+    ;;
+  *)
+    echo "Usage: /etc/init.d/tornado-tts {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0

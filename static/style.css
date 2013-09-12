@@ -1,0 +1,24 @@
+html {
+    background: #FFF;
+}
+body {
+	background: #FfF;
+	height: 100%;
+	width: 100%;
+	margin: 20pt;
+	font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+	font-size: 1.0em;
+	}
+h1 {color:#3399FF;}
+h2 {color:#3399FF;}
+
+input[type=text], input.text, textarea {
+    font-size: .9em;
+    padding: 5px;
+    width: 300pt;
+	background: rgba(6, 124, 255, 0.19);
+
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}

@@ -1,0 +1,173 @@
+<html>
+<head>
+<title>Text to Speech Synthesis Tests</title>
+<meta name="author" content="Wolf Paulus">
+<meta charset="UTF-8">
+<link rel="icon" href="./favicon.ico" type="image/x-icon"/>
+<link rel="stylesheet" type="text/css" href="style.css">
+
+<script type="text/javascript">
+	var url = "/lvtts";
+
+	function callTTS(id) {
+	 	var xhReq = new XMLHttpRequest();
+    	xhReq.onreadystatechange = function () {
+    		if (xhReq.readyState == 4 && xhReq.status == 200) {
+           		var mp3File = xhReq.response;
+           		document.getElementById('player').src=mp3File;
+           		document.getElementById('player').autoplay=true;
+           	}
+    	}
+    	xhReq.open("POST", url, true); // async request
+    	xhReq.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+		s = document.getElementById(id).value;
+    	if (document.getElementById(id).type=="textarea") {
+			s = wrap(s);
+		}
+        flags="";
+        flags+= document.getElementById("r1").checked ? "8" : "";
+        flags+= document.getElementById("r3").checked ? "m" : "";
+        alert flags
+		xhReq.send("text="+document.getElementById( id ).value + "&amp;flags=" + flags);
+    }
+
+	function wrap(s) {
+		var header= '<?xml version="1.0"?><speak version="1.0" \
+		xmlns="http://www.w3.org/2001/10/synthesis" \
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance \
+		xsi:schemaLocation="http://www.w3.org/2001/10/synthesis \
+		http://www.w3.org/TR/speech-synthesis/synthesis.xsd" xml:lang="en-US">'
+		var footer= '</speak>'
+		return header + s + footer;
+	}
+</script>
+</head>
+<body>
+<h1>Text to Speech Synthesis Tests</h1>
+<hr/>
+<form>
+
+Sampling Rate:<blockquote><input type="radio" name="khz" id="r1"/>8 KHz &nbsp;&nbsp; <input type="radio" name="khz" id="r2" checked="checked"/>22 KHz</blockquote>
+Voice Gender: <blockquote><input type="radio" name="gdr" id="r3">Male &nbsp;&nbsp; <input type="radio" name="gdr" id="r4" checked="checked"/>Female</blockquote>
+<hr/>
+A simple HTTP GET request that returns the synthesized <i>text</i> in audio/mpeg encoding would look like this:
+<blockquote><a href="http://tts.intuitlabs.com/lvtts?text=Hello+World">http://tts.intuitlabs.com/lvtts?text=Hello+World</a></blockquote>
+An HTTP POST request would return the <i>path</i> to the mp3 file instead. Read the full documentation here:<br/>
+Use this HTTP GET <i>http://tts.intuitlabs.com/alaw?text=Hello+World</i> to request a RAW PCM-16bit 8KHz A-LAW compressed encoding.
+<hr/>
+<audio id="player" controls></audio>
+<p>
+	<i>The content of all form fields can be modified ..</i><br/>
+</p>
+
+<input id = "i1" type="text" size="50" value="Hello World!"/>
+<input id = "b1" type="button" value="Synthesize" onclick="callTTS('i1');"/>
+<br/>
+<input id = "i2" type="text" size="50" value="How are you?_"/>
+<input id = "b2" type="button" value="Synthesize" onclick="callTTS('i2');"/>
+<br/>
+<input id = "i3" type="text" size="50" value="How are you?^ "/>
+<input id = "b3" type="button" value="Synthesize" onclick="callTTS('i3');"/>
+<br/>
+<p>
+	<i>The content of all following form fields gets wrapped into an XML document before being POST-ed to the TTS Server.</i><br/>
+</p>
+<h2>speak tag</h2>
+<code>
+&lt;?xml version="1.0"?&gt;<br/>
+&lt;speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" <br/>
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" <br/>
+xsi:schemaLocation="http://www.w3.org/2001/10/synthesis <br/>
+http://www.w3.org/TR/speech-synthesis/synthesis.xsd" xml:lang="en-US"&gt;
+</code><br/>
+
+<textarea id = "a1" type="textarea" cols="50" rows="2" >
+Hello World
+</textarea><br/>
+<code>&lt;/speak&gt;</code>
+<input id = "b4" type="button" value="Synthesize" onclick="callTTS('a1');"/>
+<br/>
+
+<h2>break tag</h2>
+<textarea id = "a2" type="textarea" cols="50" rows="4" >
+Take a deep breath <break/> then continue.
+Press 1 or wait for the tone. <break time="3s"/>
+I didn't hear you! <break strength="weak"/> Please repeat.
+</textarea>
+<input id = "b5" type="button" value="Synthesize" onclick="callTTS('a2');"/>
+<br/>
+
+<h2>emphasis tag</h2>
+<textarea id = "a3" type="textarea" cols="50" rows="4" >
+That is a <emphasis> big </emphasis> car!
+That is a <emphasis level="strong"> huge </emphasis> bank account!
+</textarea>
+<input id = "b6" type="button" value="Synthesize" onclick="callTTS('a3');"/>
+<br/>
+
+<h2>prosody tag</h2>
+<textarea id = "a4" type="textarea" cols="50" rows="4" >
+Hello, World!
+<prosody pitch="high" rate="+50%">Hello, World!</prosody>
+<prosody volume="loud" rate="slow">Hello, World!</prosody>
+</textarea>
+<input id = "b7" type="button" value="Synthesize" onclick="callTTS('a4');"/>
+<br/>
+
+<h2>p and s tags</h2>
+.. inserts a pause (466ms) at the beginning and end of the text ..<br/>
+<textarea id = "a5" type="textarea" cols="50" rows="5" >
+<p>
+<s>This is the first sentence of the paragraph.</s>
+<s>Here's another sentence.</s>
+</p>
+</textarea>
+<input id = "b8" type="button" value="Synthesize" onclick="callTTS('a5');"/>
+<br/>
+
+<h2>SAY AS ..</h2>
+<textarea id = "a6" type="textarea" cols="50" rows="5" >
+<say-as interpret-as="date" format="mdy">06/14/2013</say-as>
+<say-as interpret-as="date" format="m">1</say-as>
+<say-as interpret-as="time" format="hms">09:21:15 </say-as>
+</textarea>
+<input id = "b9" type="button" value="Synthesize" onclick="callTTS('a6');"/>
+<br/>
+
+<h2>SAY AS ..</h2>
+<textarea id = "a7" type="textarea" cols="50" rows="5" >
+<say-as interpret-as="cardinal" format=".">123.456</say-as>
+<say-as interpret-as="cardinal" detail=".">123.456</say-as>
+<say-as interpret-as="ordinal">27</say-as>
+<say-as interpret-as="unit">5m/s</say-as>
+</textarea>
+<input id = "b10" type="button" value="Synthesize" onclick="callTTS('a7');"/>
+<br/>
+
+<h2>SAY AS ..</h2>
+<textarea id = "a8" type="textarea" cols="50" rows="5" >
+<say-as interpret-as="fraction">3+1/9</say-as>
+<say-as interpret-as="address">320 W Mt Willson Ct</say-as>
+<say-as interpret-as="address">Ft Worth, TX 12345</say-as>
+</textarea>
+<input id = "b11" type="button" value="Synthesize" onclick="callTTS('a8');"/>
+<br/>
+
+<h2>SAY AS ..</h2>
+<textarea id = "a9" type="textarea" cols="50" rows="4" >
+<say-as interpret-as="characters">7892</say-as>
+<voice gender="male">
+<say-as interpret-as="characters">7892</say-as>
+</voice>
+</textarea>
+<input id = "b12" type="button" value="Synthesize" onclick="callTTS('a9');"/>
+<br/>
+
+</form>
+<hr/>
+<a href="mailto:wolf_paulus@intuit.com">Wolf Paulus</a>
+<br/>
+<br/>
+
+</body>
+</html>
