@@ -23,9 +23,9 @@
 #include <stdbool.h>
 
 // declare local C functions
-unsigned char* synthesize(const char *text, int* mp3_size, bool female, bool hq);
+unsigned char* synthesize(const char *text, int* mp3_size, bool female, const char *voice, bool hq);
 unsigned char* synthesize2alaw(const char *text, int* alaw_size, bool female);
-unsigned char* convert(short int *buffer, int num_bytes, int* mp3_size);
+unsigned char* convert(short int *buffer, int num_bytes, int* mp3_size, bool hq);
 int saveToFile(unsigned char *buffer, int size, const char *fileName);
 
 #ifdef WIN32
@@ -43,8 +43,10 @@ int saveToFile(unsigned char *buffer, int size, const char *fileName);
 //
 static PyObject* lv_tts(PyObject* self, PyObject* args) {
 	const char *text;
+	const char *voice;
 	const char *flags;
-	if (!PyArg_ParseTuple(args, "s|z", &text, &flags)) {
+	
+	if (!PyArg_ParseTuple(args, "s|zz", &text, &voice, &flags)) {
 		if(!PyErr_Occurred())
             PyErr_SetString(PyExc_TypeError,"You must supply at least one argument.");
         return NULL;
@@ -52,13 +54,13 @@ static PyObject* lv_tts(PyObject* self, PyObject* args) {
 		int size;
 		unsigned char* audio;
 		bool alaw = (flags != NULL) && (NULL != strstr(flags,"a")); // Request alaw compression
-		bool male = (flags != NULL) && (NULL != strstr(flags,"m")); // Request male voice
+		bool male = (flags != NULL) && (NULL != strstr(flags,"m")); // Request male voice		
 		bool lq = (flags != NULL) && (NULL != strstr(flags,"8"));   // Request 8KHz voice
 
 		if (alaw) {
 			audio= synthesize2alaw(text, &size, !male);
 		} else {
-			audio= synthesize(text, &size, !male, !lq);
+			audio= synthesize(text, &size, !male, voice, !lq);
 		}
 		return Py_BuildValue("s#", (char*)audio, size);
 	}
@@ -86,7 +88,7 @@ PyMODINIT_FUNC initlv(void) {
 // main function synthesizes standard demo text into mp3 and saves file as demo.mp3
 //
 int main(int argc, char * argv[]) {
-	const char* demoText= "This is a sample of the audio produced by the LumenVox T T S server.";
+	const char* demoText= "This is a sample of the audio produced by the Python to C Speech Synthesizer Bridge.";
 	const char* fileName= "demo.mp3";
 	const char* rawfname= "demo.wav";
 	//
@@ -98,7 +100,7 @@ int main(int argc, char * argv[]) {
 	// Synthesize test string into MP3
 	//
 	int size;
-	unsigned char* p = synthesize(demoText, &size, true, true);
+	unsigned char* p = synthesize(demoText, &size, true, "Chris", true);
 	printf("Synthesized demo text into MP3 buffer.\n");
 	printf("MP3 size: %d\n", size);
 	int k = saveToFile(p, size, fileName);
@@ -125,7 +127,7 @@ int main(int argc, char * argv[]) {
 //	Synthesizes text into raw PCM and eventually into MP3
 //  returns a unsigned char * to the new mp3 raw data,
 //  mp3_size is set to the mp3 buffer size
-unsigned char* synthesize(const char *text, int* mp3_size, bool female, bool hq) {
+unsigned char* synthesize(const char *text, int* mp3_size, bool female, const char *voice, bool hq) {
 	HTTSCLIENT ttsClient;
 	unsigned char* synthesized_audio_buffer = NULL;
 	unsigned char* mp3 = NULL;
@@ -135,7 +137,7 @@ unsigned char* synthesize(const char *text, int* mp3_size, bool female, bool hq)
 	int SynthesizedSoundFormat = SFMT_PCM;
 	const char* gender = female ? "female":"male";
     const int sampleRate = hq ? 22050 : 8000;
-	ttsClient = LV_TTS_CreateClient(NULL, gender, NULL, sampleRate, &ReturnValue);
+	ttsClient = LV_TTS_CreateClient(NULL, gender, voice, sampleRate, &ReturnValue);
 	ReturnValue = LV_TTS_SetPropertyEx(ttsClient, PROP_EX_SYNTH_SOUND_FORMAT, PROP_EX_VALUE_TYPE_INT_PTR, &SynthesizedSoundFormat, PROP_EX_TARGET_PORT);
 	ReturnValue = LV_TTS_Synthesize(ttsClient, text, LV_TTS_BLOCK);
 	ReturnValue = LV_TTS_GetSynthesizedAudioBufferLength(ttsClient, &TotalSynthesizedAudioBytes);
@@ -144,7 +146,7 @@ unsigned char* synthesize(const char *text, int* mp3_size, bool female, bool hq)
 	ReturnValue = LV_TTS_GetSynthesizedAudioBuffer(ttsClient, synthesized_audio_buffer, TotalSynthesizedAudioBytes, &bytes_returned);
 	ReturnValue = LV_TTS_DestroyClient(ttsClient);
 
-	mp3 = convert ((short int*)(synthesized_audio_buffer), TotalSynthesizedAudioBytes, mp3_size);
+	mp3 = convert ((short int*)(synthesized_audio_buffer), TotalSynthesizedAudioBytes, mp3_size, hq);
 	free(synthesized_audio_buffer);
 	return mp3;
 }
@@ -179,7 +181,7 @@ unsigned char* synthesize2alaw(const char *text, int* alaw_size, bool female) {
 //  returns a unsigned char * to the new mp3 raw data,
 //  mp3_size is set to the mp3 buffer size
 //
-unsigned char *convert(short int *buffer, int num_bytes, int* mp3_size) {
+unsigned char *convert(short int *buffer, int num_bytes, int* mp3_size, bool hq) {
 	// number of samples in raw pcm audio
 	const int num_samples = num_bytes>>1;
 
@@ -196,8 +198,8 @@ unsigned char *convert(short int *buffer, int num_bytes, int* mp3_size) {
 	}
 
 	lame_set_num_channels(lame,1);
-	lame_set_in_samplerate(lame,22050);
-	lame_set_out_samplerate(lame, 22050);
+	lame_set_in_samplerate(lame,hq ? 22050 : 8000);
+	lame_set_out_samplerate(lame, hq ? 22050 : 8000);
 	lame_set_brate(lame,128);
 	lame_set_mode(lame,MONO);
 	lame_set_quality(lame,2);

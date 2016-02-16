@@ -1,0 +1,260 @@
+<html>
+<head xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+    <meta name="description" content="Open Text Summarizer Service">
+    <meta name="keywords" content="HTML,CSS,XML,JavaScript">
+    <meta name="author" content="Wolf Paulus">
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html"/>
+    <link rel="contact" href="http://wolfpaulus.com/contact" title="Contact Wolf Paulus"/>
+    <link rel="stylesheet" type="text/css" href="etstyle.css">
+    <title>Open Text Summarizer</title>
+
+    <script type="text/javascript">
+        var url = "/ots";
+
+        function callOTS(id) {
+            var xhReq = new XMLHttpRequest();
+            xhReq.onreadystatechange = function () {
+                if (xhReq.readyState == 4 && xhReq.status == 200) {
+                    var htmlSummary = xhReq.response;
+                    document.getElementById('summary').innerHTML = htmlSummary;
+                }
+            }
+
+            flags = "&amp;format=html";
+            flags += "&amp;ratio=" + document.getElementById("ratio").value;
+
+            xhReq.open("POST", url, true); // async request
+            xhReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhReq.send("text=" + encodeURIComponent(document.getElementById(id).value) + flags);
+        }
+    </script>
+
+</head>
+<body>
+<div id="wrap" class="no_sidebar" style="width: 501px;">
+    <a href="http://intuitlabs.com"><img src="/static/logo_hor.jpg"/></a>
+
+    <div id="content" style="width: 500px; margin:5; padding: 10;">
+        <h1>Enter the text to summarize:</h1>
+        <hr/>
+        <i>
+            The <a href="http://sourceforge.net/projects/libots/" target="_blank">open text summarizer</a> is an open
+            source command line tool for summarizing texts.
+            The program reads a text and generates a summary.
+            By default, the summarizer tries to reduce the text size down to 20%<br/><br/>
+            Replace the sample text with your own and adjust the slider at the bottom to interactively change the
+            summarization ratio.
+        </i>
+        <hr/>
+        <br/>
+
+        <h2>HTTP API</h2>
+        <ul>
+            <li>Request URL: <i><b>http:/tts.inituitlabs.com/ots</b></i></li>
+            <li>Request Type: <i><b>HTTP POST</b></i></li>
+            <li>Request Content-Type: <i><b>application/x-www-form-urlencoded</b></i></li>
+            <li>Request Parameter: <i><b>text</b></i> - the text to be summarized</li>
+            <li>Request Parameter: <i><b>ratio</b></i> - 0..100, (only keyword .. verbose)</li>
+            <li>Request Parameter: <i><b>format</b></i> - text | html</li>
+        </ul>
+        <br/>
+        <hr/>
+        <br/>
+
+        <h2>Text Editor:</h2>
+        <br/>
+
+        <form action="/ots" method="post">
+            <label for="textarea"></label>
+            <textarea id="textarea" name="text" cols="60" rows="24"
+                      style="overflow: auto; width: 100%">
+Intuit Launches the Completely New QuickBooks Online
+Offers a Powerfully Simple and Engaging Experience that Works Across Intuit and Third-Party Apps,
+Anywhere You Want to Work
+MOUNTAIN VIEW, Calif., – Sep. 23, 2013 – Intuit Inc. (Nasdaq: INTU) has reimagined QuickBooks Online as
+the global small business operating system. This next-generation QuickBooks Online, available in more
+than 100 countries, provides small businesses and accountants with an intuitive, easy-to-use design that
+gives small businesses access to a robust, open platform that grows with small businesses and works
+anytime, anywhere.
+“Today we’re unveiling the next generation of QuickBooks Online, the biggest release in decades,” said
+Dan Wernikoff, SVP & GM of Intuit Small Business Financial Solutions. “We rebuilt QuickBooks Online from
+the ground up to deliver a simple, yet powerful platform that goes beyond accounting and offers small
+businesses an unprecedented business management solution. The online version of QuickBooks is built to
+take advantage of the cloud and is an open platform that sets our foundation for future growth in the
+United States and globally.”
+A Powerfully Simple Solution
+QuickBooks Online is now faster and easier to use than ever. The engaging new design is not only
+beautiful, but also built for better functionality. The latest version streamlines business tasks to
+boost efficiency and help save small businesses time. Customized data now appears in a visual manner
+that is informative and easy-to-understand. Enhanced features include:
+Simple set-up and easy to learn, intuitive functions for any small business
+Fast performance, offering real-time data and reports
+Scalable solutions to fit the needs of any size small business
+The power of QuickBooks with the benefits of the Intuit accountant ecosystem
+“I was happy with QuickBooks Online before, but when I saw the new version, I was blown away,” said
+Laura Redmond, founder of Redmond Accounting. “It’s sleek, fast, and simple and the layout is clean and
+fresh.”
+Open and Integrated Platform
+The online version of QuickBooks has been rebuilt as an open platform. For small businesses, this
+simplifies work by integrating all of Intuit’s powerful business management tools under one umbrella.
+The QuickBooks Online platform includes Intuit’s robust small business tools, including Payroll and
+Payments, which are now interconnected and built into the online version of QuickBooks. The open
+platform design allows third parties and app developers to create small business applications that are
+available to nearly 500,000 QuickBooks Online subscribers, which boast more than 1.3 million users,
+giving customers the ability to customize the online version of QuickBooks to meet their specific
+business needs, while providing them access to data across applications. The QuickBooks Online platform
+offers a range of collaborative tools including:
+Access to Intuit’s accounting, payments and payroll add-on solutions through one login, from a computer,
+iPhone, iPad, and Android phones and tablets
+Real-time data updates enabling immediate accountant or bookkeeper collaboration
+Large-scale app integration and access to Intuit’s Apps.com, one of the largest and most diverse small
+business apps marketplaces
+Work Anytime, Anywhere
+QuickBooks Online has evolved to adapt to the evolving needs of small business owners, who are
+increasingly on-the-go and rely on mobile for day-to-day tasks. This release of the online version of
+QuickBooks features a mobile-first design approach that gives small business owners around the world
+access to information wherever they work. Features include:
+Availability in more than 100 countries in more than 10 languages
+Data safely stored in the cloud for on-the-go accessibility via any internet-connected computer, iPhone,
+iPad or Android phone or tablet
+Compatibility across PC, Mac, iPhone, iPad, and Android phones and tablets
+“When you log in, it’s beautiful,” said Adam Wegener, co-owner of TrashAmps, a portable sound system
+company. “I appreciate the functionality of being able to access the software from my phone and tablet.
+Being a small business owner, you never know when or where you’re working, so the ability to go in and
+check on things is a real benefit to me.”
+Pricing and Availability
+The new QuickBooks Online experience is scheduled to be available starting in late October for new
+users, and rollout to existing users in more than 100 countries is scheduled to begin in January 2014.
+After a 30-day free trial, the online version of QuickBooks starts at the standard list price of $12.99
+per month or $124.99 per year for new users, which includes free access to all of Intuit mobile apps.
+Visit www.quickbooks.com/new for more information.
+            </textarea>
+            <br/>
+            <label for="ratio">Summarization Ratio:</label>
+            <input type="range" id="ratio" name="ratio" min="0" max="100" value="20" onchange="callOTS('textarea');">
+            <input type="button" value="Apply" onclick="callOTS('textarea');"/>
+        </form>
+        <br/>
+        <br/>
+
+        <div id="summary" style="padding:14px;background: #FCFCFC; width: 100%"></div>
+        <p/>
+
+        <div id="doc" style="background: #E1E1D2; color:#2D3940;padding:14px; font-size: smaller">
+
+            <h2>How it works</h2>
+
+            <p>
+                The Idea behind OTS is that the important ideas in an article are described with
+                many of the same words while redundant information uses less technical terms
+                and is not related to the main subject of the article. Important lines are lines
+                that are related to the subject of the article. The subject of the article is the
+                list of ideas that are most discussed in the article.
+                In practice , the article is scanned once and a list of all of the words and their
+                occurrence in the text is stored in a list. After sorting this list by the
+                occurrence of words in the text we will see a list similar to this:
+            </p>
+
+            <ul>
+                <li>11 are</li>
+                <li>17 is</li>
+                <li>16 a</li>
+                <li>14 Harry</li>
+                <li>14 on</li>
+                <li>13 Sally</li>
+                <li>11 Love</li>
+                <li>11 such</li>
+                <li>4 an</li>
+                <li>2 taxi</li>
+                <li>1 university</li>
+                <li>1 chicago</li>
+                <li>1 meets</li>
+                <li>...</li>
+            </uL>
+
+            <p>
+                Now we will remove all the words that are common in the English language using a
+                dictionary file. Example of such words: "The","a","since","after","will".
+                These words are words that don't teach us anything about the subject of the article.
+                Knowing that the word "Police" is in a given text can tell us that the article might
+                talk about the police , however knowing that the word "will" is in the text can't
+                teach us anything about the subject of the text.
+            </p>
+
+            <p>After removing the redundant words the new list will look like this:</p>
+            <ul>
+                <li>14 Harry</li>
+                <li>13 Sally</li>
+                <li>11 Love</li>
+                <li>2 taxi</li>
+                <li>1 university</li>
+                <li>1 chicago</li>
+                <li>1 meets</li>
+            </ul>
+            <p>
+                From this list we may assume that the text talks about "Harry , Sally , Love".
+                So an important sentence in the text will be a sentence that talks about Harry,
+                Sally and Love. A sentence that talks about the university of Chicago may be
+                neglected because we find the word "chicago" only once in the text, so we may assume
+                that "chicago" is not one of the main ideas in the text. Each sentence is given
+                a grade based on the the keywords in it. A line that holds many important words will
+                be given a high grade. To produce a 20% summary we print the top 20% sentences with
+                the highest grade.
+            </p>
+
+            <p>
+                Ots will not work on books because they cover too many topics. however, each
+                page may be fed individually, this will produce a good result. Poems or other
+                non-standard texts will not produce a good result because they are structured
+                in a "funny" way.
+            </p>
+
+            <p>
+                Every new language to be implemented needs to contain a list of VERY common words
+                in the language. 250 words is more than enough. See en.dic for example. Writing such
+                a dictionary is an iteratice process. It is suggested that the author of such a
+                dictionary will try to scan a few articles using OTS and try it with the "--keywords"
+                flag on. This will tell him if OTS thinks for some reason that "his" is the subject
+                of the text. If this is the case then "his" needs to be added to the dictionary.
+            </p>
+
+            <h3>Stemming</h3>
+
+            <p>
+                Stemming is the ability to take a word such as "running" and trace it back to its
+                original form to the word "run". We use this feature to group together all of the
+                the derivatives of a certain words. Now what we group together these words
+                ots will know what the subject of this article is the one word "run" and not
+                ("running","run", "runnable" ...). Now, when we encounter a sentence that talks
+                about some "runner" we will know to that it is related to the topic of the article.
+
+                In previous versions this has never been done because "running"!="run";
+
+                The stemming support is now integrated into OTS. To allow stemming I had to create a new
+                file format that will hold the stemming rules. That format is XML based. libxml2 is being used.
+            </p>
+            <h4>Example</h4>
+
+            <p>
+                [dam]==[dams] --- stem[dam] <br/>
+                [asking]==[asked] --- stem[ask]<br/>
+                [build]==[building] --- stem[build]<br/>
+                [accidents]==[accident] --- stem[accident]<br/>
+                [policing]==[police] --- stem[polic]<br/>
+                [reported]==[report] --- stem[report]<br/>
+                [years]==[year] --- stem[year]<br/>
+                [increased]==[increase] --- stem[increas]<br/>
+                [study]==[studies] --- stem[study]<br/>
+                [reported]==[reports] --- stem[report]<br/>
+                [gates]==[gate] --- stem[gat]<br/>
+                [locked]==[lock] --- stem[lock]<br/>
+            </p>
+        </div>
+        <hr/>
+        <i>Wolf Paulus, Nov, 2013</i>
+        <br/>
+    </div>
+</div>
+</body>
+</html>
